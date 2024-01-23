@@ -84,7 +84,7 @@ module.exports = {
             users.forEach((user)=>{
                 const averageScore = user.raidsParticipated?user.totalScore/user.raidsParticipated.toFixed(2):0;
                 const role = positionToRole(user.guildPosition);
-                guildInfo += `${role} : <@${user.userId}> : ${averageScore} Avg\n`
+                guildInfo += `**${role}** : <@${user.userId}> : ${averageScore} Avg\n`
             });
 
             const guildInfoEmbed = buildEmbed(embedColors.info,`Guild : **${guildName}** : ${guildData.totalMembers} Players`,guildInfo,authorUser);

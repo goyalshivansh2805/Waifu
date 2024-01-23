@@ -4,7 +4,7 @@ const {Client,Message,EmbedBuilder} = require('discord.js');
 
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
-const raidLogChannelId = '1195970797936844891';
+const raidLogChannelId = '1198995652307325100';
 
 /**
  * 
