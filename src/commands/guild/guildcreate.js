@@ -87,15 +87,15 @@ module.exports = {
             );
             let isResponded = false;
             collector.on('collect',async (interaction)=>{
+                interaction.deferUpdate();
                 if(interaction.customId === 'guild-create-no'){
                     isResponded = true;
                     successButton.setDisabled(true);
                     failureButton.setDisabled(true);
                     const failureMessage = buildEmbed(embedColors.failure,'Process Cancelled.',`<@${authorId}> Cancelled the process.`,authorUser);
-                    interaction.reply({
-                        embeds:[failureMessage],
-                    });
+ 
                     reply.edit({
+                        embeds:[failureMessage],
                         components:[buttonRow],
                     });
                     return;
@@ -114,10 +114,9 @@ module.exports = {
                             successButton.setDisabled(true);
                             failureButton.setDisabled(true);
                             const failureMessage = buildEmbed(embedColors.failure,'Process Cancelled.',`<@${authorId}> , Guild with name **${guildName}** already exists.`,authorUser);
-                            interaction.reply({
-                                embeds:[failureMessage],
-                            });
+  
                             reply.edit({
+                                embeds:[failureMessage],
                                 components:[buttonRow],
                             });
                             return;
@@ -132,10 +131,9 @@ module.exports = {
                         await author.save();
                         await userGuild.save();
                         const successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${authorId}> , Guild with name **${author.guildName}** has been Created Successfully.`,authorUser);
-                        interaction.reply({
-                            embeds:[successMessage],
-                        });
+  
                         reply.edit({
+                            embeds:[successMessage],
                             components:[buttonRow],
                         });
                         return;

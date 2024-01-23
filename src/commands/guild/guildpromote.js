@@ -133,15 +133,14 @@ module.exports = {
             );
             let isResponded = false;
             collector.on('collect',async (interaction)=>{
+                interaction.deferUpdate();
                 if(interaction.customId === 'guild-promote-no'){
                     isResponded = true;
                     successButton.setDisabled(true);
                     failureButton.setDisabled(true);
                     const failureMessage = buildEmbed(embedColors.failure,'Process Cancelled.',`<@${authorId}> Cancelled the process.`,authorUser);
-                    interaction.reply({
-                        embeds:[failureMessage],
-                    });
                     reply.edit({
+                        embeds:[failureMessage],
                         components:[buttonRow],
                     });
                     return;
@@ -158,10 +157,9 @@ module.exports = {
                         await authorGuildData.save();
                         await authorData.save();
                         const successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${authorId}> , <@${targetUserId}> is the new **Founder** of the Guild **${authorData.guildName}** Successfully.`,authorUser);
-                        interaction.reply({
-                            embeds:[successMessage],
-                        });
+
                         reply.edit({
+                            embeds:[successMessage],
                             components:[buttonRow],
                         });
                         return;

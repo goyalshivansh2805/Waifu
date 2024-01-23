@@ -130,15 +130,15 @@ module.exports = {
             );
             let isResponded = false;
             collector.on('collect',async (interaction)=>{
+                interaction.deferUpdate();
                 if(interaction.customId === 'guild-add-no'){
                     isResponded = true;
                     successButton.setDisabled(true);
                     failureButton.setDisabled(true);
                     const failureMessage = buildEmbed(embedColors.failure,'Process Cancelled.',`<@${targetUserId}> did not want to join the guild **${author.guildName}** .`,authorUser);
-                    interaction.reply({
-                        embeds:[failureMessage],
-                    });
+
                     reply.edit({
+                        embeds:[failureMessage],
                         components:[buttonRow],
                     });
                     return;
@@ -162,10 +162,9 @@ module.exports = {
                         await target.save();
                         await userGuild.save();
                         const successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${targetUserId}> has been added to guild **${author.guildName}** Successfully.`,authorUser);
-                        interaction.reply({
-                            embeds:[successMessage],
-                        });
+
                         reply.edit({
+                            embeds:[successMessage],
                             components:[buttonRow],
                         });
                         return;

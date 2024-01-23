@@ -88,7 +88,7 @@ module.exports = {
             const recordsPerPage = 10;
             let combinedRecords = {};
             let index = 0;
-            let i=0
+            let i=0;
             if(type === 'raids' || type === 'raid') guildPlayers.sort((a,b)=> b.raidsParticipated - a.raidsParticipated);
             if(type === 'score') guildPlayers.sort((a,b)=> (b.raidsParticipated ? b.totalScore / b.raidsParticipated.toFixed(2) : 0) -
             (a.raidsParticipated ? a.totalScore / a.raidsParticipated.toFixed(2) : 0));
