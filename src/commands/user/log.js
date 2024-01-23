@@ -82,7 +82,8 @@ module.exports = {
                 messageOrInteraction.reply({embeds:[noDataEmbed]});
                 return;
             };
-            const guildName = authorUserData.guildName;
+            let guildName = null;
+            if(authorUserData) guildName = authorUserData.guildName;
             if(!targetUserData || !targetUserData.guildName && !devs.includes(authorId)){
                 const noDataEmbed = buildEmbed(embedColors.failure,'Guild Not Found',`<@${targetUserId}> is not in any guild.`,authorUser);
                 messageOrInteraction.reply({embeds:[noDataEmbed]});
@@ -98,10 +99,22 @@ module.exports = {
                 messageOrInteraction.reply({embeds:[notEnoughPermsEmbed]});
                 return;
             };
-            targetUserData.raidsParticipated += 1;
-            targetUserData.totalScore += targetUserScore;
-            targetUserData.elixir += elixirPerRaid;
-            targetUserData.shard += shardPerRaid;
+            if(!targetUserData){
+                targetUserData = new User(
+                    {
+                        userId:targetUserId,
+                        totalScore:targetUserScore,
+                        raidsParticipated:1,
+                        elixir:elixirPerRaid,
+                        shard:shardPerRaid,
+                    }
+                )
+            }else{
+                targetUserData.raidsParticipated += 1;
+                targetUserData.totalScore += targetUserScore;
+                targetUserData.elixir += elixirPerRaid;
+                targetUserData.shard += shardPerRaid;
+            }
             logDetails = new Log(
                 {
                     userId:targetUserId,
