@@ -19,6 +19,10 @@ const logSchema = new Schema(
             type:Number,
             default:0,
         },
+        addedby:{
+            type:String,
+            required:true,
+        }
     }, {
         timestamps: { timeZone: 'Asia/Kolkata' }
     }

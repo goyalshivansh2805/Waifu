@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Log = require('../models/Log');
 const {Client,Message,EmbedBuilder} = require('discord.js');
+const {clientId} = require('../../config.json');
 
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
@@ -58,6 +59,7 @@ module.exports = async (client,message) =>{
                 score:targetUserScore,
                 move:targetUserMoves,
                 damage:targetUserDamage,
+                addedby:clientId,
             }
         );
         await user.save();
