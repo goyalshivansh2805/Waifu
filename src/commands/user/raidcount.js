@@ -1,6 +1,7 @@
 const {ApplicationCommandOptionType,Client,Interaction,Message,EmbedBuilder, Embed} = require('discord.js');
 const User = require('../../models/User');
 const Log = require('../../models/Log');
+const { timeStamp } = require('console');
 
 module.exports = {
     /**
@@ -44,7 +45,24 @@ module.exports = {
                 {
                     userId:targetUserId,
                 }
-            )
+            ).sort({ createdAt: -1 });
+            let logsDaily = await Log.find(
+                {
+                    userId:targetUserId,
+                    createdAt: { $gte: new Date().setHours(0, 0, 0, 0)}
+                }
+            );
+            let todayAverage = 0;
+            let todayRaids = 0;
+            let todayTotalScore = 0;
+            if(logsDaily && logsDaily.length !== 0){
+                todayRaids = logsDaily.length;
+                for(const logDaily of logsDaily){
+                    todayTotalScore += logDaily.score;
+                };
+                todayAverage = (todayTotalScore/todayRaids).toFixed(2);
+            };
+            const lastRaidTimestamp = Math.floor(logs[0]?.createdAt.getTime() / 1000) || 'No Data';
             if(!user){
                 const messageEmbed = new EmbedBuilder()
                     .setTitle('Records Not Found ')
@@ -63,6 +81,8 @@ module.exports = {
                     {name:'**Statistics**',value:`> Total Raids: ${user.raidsParticipated}\n> Average Score: ${averageScore}`},
                     {name:'**Previous Scores**',value:`> 1. ${logs[0]?.score || 0}\n> 2. ${logs[1]?.score || 0}`},
                     {name:'**Rewards**',value:`> Elixir: ${user.elixir} <:Elixir:1198549045732442178> \n> Shard: ${user.shard} <:Shard:1198548958654517289>`},
+                    {name:`**Today's Stats**` , value:`> Raids: ${todayRaids} \n> Average: ${todayAverage}`},
+                    {name:'**Last Raid**',value:`> <t:${lastRaidTimestamp}:R>`}
                     )
                 .setTimestamp()
                 .setColor('Blue')
