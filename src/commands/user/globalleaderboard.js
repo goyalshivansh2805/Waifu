@@ -30,60 +30,25 @@ module.exports = {
     callback: async (client,messageOrInteraction,usedCommandObject) => {
         try {
             if(!messageOrInteraction.inGuild()) return;
-            let targetUserId = null;  
             let authorId = null;
             let type = 'score';
             if(messageOrInteraction instanceof Message){
                 authorId = messageOrInteraction.author.id;
-                targetUserId = messageOrInteraction.author.id;
                 if(usedCommandObject.commandArguments.length){
                     type = usedCommandObject.commandArguments[0]?usedCommandObject.commandArguments[0]:'score';
                     type.toLowerCase();
-                    const targetUserOption = usedCommandObject.commandArguments[1];
-                    if (targetUserOption && targetUserOption.startsWith('<@')) {
-                        const match = targetUserOption.match(/^<@!?(\d+)>$/);
-                        if (match) {
-                            targetUserOption = match[1];
-                        }
-                    }
+
                     if(!sortTypes.includes(type)) {messageOrInteraction.reply('Please Enter a valid sort type.'); return;}
                 }
             }else{
                 authorId = messageOrInteraction.user.id;
-                targetUserId = messageOrInteraction.user.id;
-                const targetUserOption = await messageOrInteraction.options.get('user');
                 type = await messageOrInteraction.options.get('type')?.value;
                 if(!type) type = 'score';
-                if(targetUserOption){
-                    targetUserId = targetUserOption.value;
-                }
             };
 
             const authorUser = await client.users.fetch(authorId);
-            const targetUser = await client.users.fetch(targetUserId);
-            let user = await User.findOne(
-                {
-                    userId:targetUserId
-                }
-            );
-            if(!user || !user.guildName){
-                const messageEmbed = new EmbedBuilder()
-                    .setTitle('Records Not Found ')
-                    .setDescription(`<@${targetUserId}> is not in a guild.`)
-                    .setTimestamp()
-                    .setColor('Red')
-                    .setFooter({text:`Requested by ${authorUser.displayName}`, iconURL:`${authorUser.displayAvatarURL()}`})
-                messageOrInteraction.reply({embeds:[messageEmbed]});
-                return;
-            }
-            let guildInfo = await Guild.findOne(
-                {
-                    guildName:user.guildName,
-                },
-            );
-            let guildPlayers =await  User.find({
-                guildName:user.guildName,
-            });
+
+            let guildPlayers =await  User.find({});
             const leaderboardPages = [];
             let pageDescription = '';
             const recordsPerPage = 10;
@@ -126,7 +91,7 @@ module.exports = {
                     index++;
                 };
                 if(index===recordsPerPage){
-                    const pageEmbed = buildEmbed(embedColors.info , `Leaderboard : **${user.guildName}** : **${type.toUpperCase()}**`,pageDescription,authorUser);
+                    const pageEmbed = buildEmbed(embedColors.info , ` Global Leaderboard : **${type.toUpperCase()}**`,pageDescription,authorUser);
                     pageDescription='';
                     leaderboardPages.push(pageEmbed);
                     index = 0;
@@ -137,7 +102,7 @@ module.exports = {
                     pageDescription += `${++i} : <@${record.user}> : **${record.totalPoints}** Points\n`;
                     index++;
                     if (index === recordsPerPage) {
-                        const pageEmbed = buildEmbed(embedColors.info, `Leaderboard : **${user.guildName}** : **${type.toUpperCase()}**`, pageDescription, authorUser);
+                        const pageEmbed = buildEmbed(embedColors.info, ` Global Leaderboard : **${type.toUpperCase()}**`, pageDescription, authorUser);
                         leaderboardPages.push(pageEmbed);
                         pageDescription = '';
                         index = 0;
@@ -148,7 +113,7 @@ module.exports = {
             if (index > 0) {
                 const pageEmbed = buildEmbed(
                     embedColors.info,
-                    `Leaderboard : **${user.guildName}** : **${type.toUpperCase()}**`,
+                    ` Global Leaderboard : **${type.toUpperCase()}**`,
                     pageDescription,
                     authorUser
                 );
@@ -160,14 +125,9 @@ module.exports = {
             console.log(`Error While Using lb: ${error}`);
         }   
     },
-    name:'leaderboard',
-    description:"Shows Your's or any other guild's leaderboard .",
+    name:'globalleaderboard',
+    description:"Shows global leaderboard .",
     options:[
-        {
-            name:'user',
-            description:'The user whose guild leaderboard you want to see.',
-            type:ApplicationCommandOptionType.User,
-        },
         {
             name:'type',
             description:'Sorting Type',
@@ -192,8 +152,8 @@ module.exports = {
             ]
         }
     ],
-    alias:['lb'],
+    alias:['glb'],
     arguments:0,
-    format:'`!leaderboard`',
+    format:'`!globalleaderboard`',
 
 };
