@@ -11,7 +11,7 @@ module.exports = async (client) =>{
         // const applicationCommands = await testServerId.commands.fetch();
         // await Promise.all(applicationCommands.map(command => command.delete()));
         // console.log('All application commands deleted successfully.');
-        const applicationCommands = await getApplicationCommands(client);
+        const applicationCommands = await getApplicationCommands(client,testServer);
         const commandsToDelete = applicationCommands.cache.filter((existingCommand) =>
             !localCommands.find((cmd) => cmd.name === existingCommand.name)
         );

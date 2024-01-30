@@ -174,4 +174,5 @@ module.exports = {
     alias:['l'],
     arguments:2,
     format:'`!log user score moves damage`',
+    devsOnly:true,
 }

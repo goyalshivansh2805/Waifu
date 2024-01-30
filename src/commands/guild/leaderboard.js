@@ -195,5 +195,6 @@ module.exports = {
     alias:['lb'],
     arguments:0,
     format:'`!leaderboard`',
+    devsOnly:true,
 
 };

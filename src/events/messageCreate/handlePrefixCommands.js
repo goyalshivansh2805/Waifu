@@ -1,10 +1,9 @@
 const { default: test } = require("node:test");
-const { testServer, devs, sofiId } = require("../../../config.json");
+const { testServer, devs, sofiId,dcId } = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const prefixRemover = require("../../utils/prefixRemover");
 const autoLog = require("../../utils/autolog.js");
 const { Message, Client } = require("discord.js");
-
 /**
  *
  * @param {Client} client
@@ -14,22 +13,22 @@ const { Message, Client } = require("discord.js");
 module.exports = async (client, message) => {
   const localCommands = getLocalCommands();
   try {
-    if (
-      message.author.id === sofiId &&
-      message.reference &&
-      message.reference.messageId
-    ) {
-      const referencedMessage = await message.channel.messages.fetch(
-        message.reference.messageId
-      );
-      if (
-        referencedMessage &&
-        ['smr', 'sgr'].includes(referencedMessage.content.toLowerCase())
-      ) {
-        autoLog(client, message);
-        return;
-      }
-    }
+    // if (
+    //   message.author.id === sofiId &&
+    //   message.reference &&
+    //   message.reference.messageId
+    // ) {
+    //   const referencedMessage = await message.channel.messages.fetch(
+    //     message.reference.messageId
+    //   );
+    //   if (
+    //     referencedMessage &&
+    //     ['sgr',].includes(referencedMessage.content.toLowerCase())
+    //   ) {
+    //     autoLog(client, message);
+    //     return;
+    //   }
+    // }
     if(message.author.bot) return;
     const usedCommandObject = prefixRemover(message);
     if (usedCommandObject.commandName === null) return;

@@ -80,4 +80,5 @@ module.exports = {
     arguments:0,
     alias:['vl'],
     format:'!viewlogs',
+    devsOnly:true,
 }

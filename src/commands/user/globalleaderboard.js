@@ -43,7 +43,7 @@ module.exports = {
             }else{
                 authorId = messageOrInteraction.user.id;
                 type = await messageOrInteraction.options.get('type')?.value;
-                if(!type) type = 'score';
+                if(!type) type='score';
             };
 
             const authorUser = await client.users.fetch(authorId);
@@ -55,6 +55,16 @@ module.exports = {
             let combinedRecords = {};
             let index = 0;
             let i=0;
+            if(!guildPlayers){
+                const messageEmbed = new EmbedBuilder()
+                    .setTitle('Records Not Found')
+                    .setDescription(`No Raid Records.`)
+                    .setTimestamp()
+                    .setColor('Red')
+                    .setFooter({text:`Requested by ${authorUser.displayName}`, iconURL:`${authorUser.displayAvatarURL()}`})
+                messageOrInteraction.reply({embeds:[messageEmbed]});
+                return;
+            }
             if(type === 'raids' || type === 'raid') guildPlayers.sort((a,b)=> b.raidsParticipated - a.raidsParticipated);
             if(type === 'score') guildPlayers.sort((a,b)=> (b.raidsParticipated ? b.totalScore / b.raidsParticipated.toFixed(2) : 0) -
             (a.raidsParticipated ? a.totalScore / a.raidsParticipated.toFixed(2) : 0));
@@ -86,7 +96,7 @@ module.exports = {
                 if(type === 'combined') break;
                 if(index<recordsPerPage){
                     if(type === 'raids' || type === 'raid') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.raidsParticipated}**\n`;
-                    if(type == 'score') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.raidsParticipated?guildPlayer.totalScore/guildPlayer.raidsParticipated.toFixed(2):0}**\n`;
+                    if(type == 'score') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${(guildPlayer.raidsParticipated ? parseFloat((guildPlayer.totalScore / guildPlayer.raidsParticipated).toFixed(2)) : 0)}**\n`;
                     if(type === 'reward' || type === 'rewards') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.elixir}** <:Elixir:1198549045732442178> : **${guildPlayer.shard}** <:Shard:1198548958654517289> \n`;
                     index++;
                 };
@@ -155,5 +165,5 @@ module.exports = {
     alias:['glb'],
     arguments:0,
     format:'`!globalleaderboard`',
-
+    devsOnly:true,
 };

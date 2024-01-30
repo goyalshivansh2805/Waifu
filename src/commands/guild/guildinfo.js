@@ -106,4 +106,5 @@ module.exports = {
     alias:['gi'],
     arguments:0,
     format:'`!guildinfo`',
+    devsOnly:true,
 }

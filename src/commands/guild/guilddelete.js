@@ -153,5 +153,6 @@ module.exports = {
     description:'Deletes Your guild.',
     alias:['gd'],
     arguments:0,
-    format:'`!guilddelete`'
+    format:'`!guilddelete`',
+    devsOnly:true,
 }

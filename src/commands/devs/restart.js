@@ -31,8 +31,8 @@ module.exports = {
              msg.edit({embeds:[successMessageEmbed]});
           }, 10000);
         })
-        .then(client.destroy())
-        .then(client.login(process.env.TOKEN))
+        .then(await client.destroy())
+        .then(await client.login(process.env.TOKEN))
           } catch(e) {
             message.channel.send(`ERROR: ${e.message}`)
 

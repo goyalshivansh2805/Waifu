@@ -151,4 +151,5 @@ module.exports = {
     alias:['gl'],
     arguments:0,
     format:'`!guildleave`',
+    devsOnly:true,
 }

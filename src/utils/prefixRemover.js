@@ -1,5 +1,5 @@
 const {message} = require('discord.js');
-const prefixs = ['!'];
+const prefixs = ['!','?'];
 
 module.exports = (message)=>{
     const messageContent = message.content;

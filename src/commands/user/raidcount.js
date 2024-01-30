@@ -73,7 +73,7 @@ module.exports = {
                 messageOrInteraction.reply({embeds:[messageEmbed]});
                 return;
             }
-            const averageScore = user.raidsParticipated?user.totalScore/user.raidsParticipated.toFixed(2):0;
+            const averageScore = user.raidsParticipated?(user.totalScore/user.raidsParticipated).toFixed(2):0;
             const raidCountStatistics  = new EmbedBuilder()
                 .setDescription(`<@${targetUserId}> Statistics\n> Guild: **${user.guildName || 'Waifu'}**`)
                 .setThumbnail(`${targetUser.displayAvatarURL()}`)
@@ -107,4 +107,5 @@ module.exports = {
     alias:['rc'],
     arguments:0,
     format:'`!raidcount`',
+    devsOnly:true,
 };
