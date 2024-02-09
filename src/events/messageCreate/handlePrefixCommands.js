@@ -4,6 +4,7 @@ const getLocalCommands = require("../../utils/getLocalCommands");
 const prefixRemover = require("../../utils/prefixRemover");
 const autoLog = require("../../utils/autolog.js");
 const { Message, Client } = require("discord.js");
+const raidTimings = require("../../utils/raidTimings.js");
 /**
  *
  * @param {Client} client
@@ -13,22 +14,23 @@ const { Message, Client } = require("discord.js");
 module.exports = async (client, message) => {
   const localCommands = getLocalCommands();
   try {
-    // if (
-    //   message.author.id === sofiId &&
-    //   message.reference &&
-    //   message.reference.messageId
-    // ) {
-    //   const referencedMessage = await message.channel.messages.fetch(
-    //     message.reference.messageId
-    //   );
-    //   if (
-    //     referencedMessage &&
-    //     ['sgr',].includes(referencedMessage.content.toLowerCase())
-    //   ) {
-    //     autoLog(client, message);
-    //     return;
-    //   }
-    // }
+    if (
+      message.author.id === sofiId &&
+      message.reference &&
+      message.reference.messageId
+    ) {
+      const referencedMessage = await message.channel.messages.fetch(
+        message.reference.messageId
+      );
+      if (
+        referencedMessage &&
+        ['sgr',].includes(referencedMessage.content.toLowerCase())
+      ) {
+        raidTimings(client,message);
+        // autoLog(client, message);
+        return;
+      }
+    }
     if(message.author.bot) return;
     const usedCommandObject = prefixRemover(message);
     if (usedCommandObject.commandName === null) return;

@@ -2,7 +2,7 @@ const {ApplicationCommandType,Client,Message,EmbedBuilder,ActionRow,ComponentTyp
 const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
-const ms = require('ms');
+const Raid = require('../../models/Raid');
 
 const embedColors = {
     success: 0x00ff00,
@@ -31,13 +31,10 @@ module.exports={
             const remainingRaiders = [];
             if(!messageOrInteraction.inGuild()) return;
             let authorId = null;
-            let time = null;
             if(messageOrInteraction instanceof Message){
                 authorId = messageOrInteraction.author.id;
-                time = usedCommandObject.commandArguments[0];
             }else{
                 authorId = messageOrInteraction.user.id;
-                time = await messageOrInteraction.options.get('time').value;
             };
             const authorUser = await client.users.fetch(authorId);
             const author = await User.findOne(
@@ -55,64 +52,58 @@ module.exports={
                     });
                     return;
             };
-            const msTime = ms(time);
-            if(isNaN(msTime)){
-                const messageEmbed = buildEmbed(embedColors.failure,'Process Failed.','Please enter a vaild time interval.',authorUser);
-                    messageOrInteraction.reply({
-                        embeds:[messageEmbed]
-                    });
-                    return;
-            };
             let i=0;
             let remainingRaidersPageDescription = '';
             let raidsDoneDescription = '';
-            const logPromises = guildPlayers.map(async (player) => {
-                const logs = await Log.find({ userId: player.userId }).sort({ createdAt: -1 });
-                return { userId: player.userId, logs };
+  
+            const logsForPlayers = await Log.aggregate([
+                { $match: { userId: { $in: guildPlayers.map(player => player.userId) } } },
+                { $sort: { createdAt: -1 } },
+                { $group: { _id: '$userId', log: { $first: '$$ROOT' } } }
+            ]);
+            logsForPlayers.sort((a,b) => {
+                return b.log.score - a.log.score;
             });
-            const logsForPlayers = await Promise.all(logPromises);
-            guildPlayers.sort((a, b) => {
-                const logsA = logsForPlayers.find((playerLogs) => playerLogs.userId === a.userId)?.logs || [];
-                const logsB = logsForPlayers.find((playerLogs) => playerLogs.userId === b.userId)?.logs || [];
-
-                const scoreA = logsA.length > 0 ? logsA[0].score : 0;
-                const scoreB = logsB.length > 0 ? logsB[0].score : 0;
-
-                return scoreB - scoreA;
-            
-            });
-            for(let i = 0; i < guildPlayers.length; i++){
+            const currentRaid = await Raid.findOne().sort({ createdAt: -1 });
+            if(!currentRaid) {
+                messageOrInteraction.reply('Please do sgr once or contact sg');
+                return;
+            };
+            let raidDoneCount = 0;
+            let remainingRaidersCount = 0;
+            const startingTimestamp = currentRaid.startingTimestamp;
+            const endingTimestamp = currentRaid.endingTimestamp;
+            let guildTotalScore = 0;
+            for(let i = 0; i < logsForPlayers.length; i++){
                 try {
-                    const guildPlayer = guildPlayers[i];
-                    if (guildPlayer.raidsParticipated === 0) {
-                        remainingRaidersPageDescription += `• <@${guildPlayer.userId}>\n`;
-                        remainingRaiders.push(guildPlayer);
-                        continue;
-                    };
-                    const logs = await Log.find({ userId: guildPlayer.userId }).sort({ createdAt: -1 });
-                    if (!logs || !logs.length) {
-                        remainingRaidersPageDescription += `• <@${guildPlayer.userId}>\n`;
-                        remainingRaiders.push(guildPlayer);
+                    const lastLog = logsForPlayers[i];
+                    if (!lastLog ) {
+                        remainingRaidersPageDescription += `• <@${lastLog.log.userId}>\n`;
+                        remainingRaiders.push(lastLog.log.userId);
+                        remainingRaidersCount++;
                         continue;
                     }
-                    const lastLog = logs[0];
-                    const logTimestamp = lastLog.createdAt.getTime();
-                    const currentTimestamp = Date.now();
-                    if (currentTimestamp - logTimestamp > msTime) {
-                        remainingRaidersPageDescription += `• <@${guildPlayer.userId}>\n`;
-                        remainingRaiders.push(guildPlayer);
-                        continue;
-                    }
+                    const logTimestamp = lastLog.log.createdAt.getTime();
                     const lastRaidTimestamp = Math.floor(logTimestamp / 1000);
-                    raidsDoneDescription += `• <@${guildPlayer.userId}> : ${lastLog.score} : <t:${lastRaidTimestamp}:R> \n`;
+                    if (lastRaidTimestamp<startingTimestamp || lastRaidTimestamp>endingTimestamp) {
+                        remainingRaidersPageDescription += `• <@${lastLog.log.userId}>\n`;
+                        remainingRaiders.push(lastLog.log.userId);
+                        remainingRaidersCount++;
+                        continue;
+                    }
+                    raidsDoneDescription += `• <@${lastLog.log.userId}> : ${lastLog.log.score} : <t:${lastRaidTimestamp}:R> \n`;
+                    guildTotalScore += lastLog.log.score;
+                    raidDoneCount++;
                 } catch (error) {
-                    console.error(`Error processing logs for user ${guildPlayers[i].userId}: ${error}`);
+                    console.error(`Error processing logs for user ${logsForPlayers[i].log.userId}: ${error}`);
                 }
             };
             if(raidsDoneDescription==='') raidsDoneDescription = 'No Raids Within that time limit';
+            else raidsDoneDescription += `\n> **Average Guild Score** : ${(guildTotalScore/raidDoneCount).toFixed(2)}\n> **Total Players** : ${raidDoneCount}`; 
             if(remainingRaidersPageDescription==='') remainingRaidersPageDescription = 'No players Remaining.';
-            const raidsDoneEmbed = buildEmbed(embedColors.info,'Raid Status.',raidsDoneDescription,authorUser);
-            const remainingRaidersEmbed = buildEmbed(embedColors.info,'Remaining Players.',remainingRaidersPageDescription,authorUser);
+            else remainingRaidersPageDescription +=   `\n> **Total Players** : ${remainingRaidersCount}`;
+            const raidsDoneEmbed = buildEmbed(embedColors.info,`Raid Status [Ends : <t:${endingTimestamp}:R> ]`,raidsDoneDescription,authorUser);
+            const remainingRaidersEmbed = buildEmbed(embedColors.info,`Remaining Players [Ends : <t:${endingTimestamp}:R> ]`,remainingRaidersPageDescription,authorUser);
             const raidsDoneButton  = new ButtonBuilder()
                 .setCustomId('raids-done')
                 .setStyle(ButtonStyle.Primary)
@@ -188,7 +179,7 @@ module.exports={
                     };
                     let raidPingMessage = '';
                     for(const remainingRaider of remainingRaiders){
-                        raidPingMessage += `• <@${remainingRaider.userId}>\n`
+                        raidPingMessage += `• <@${remainingRaider}>\n`
                     };
                     raidPingMessage += '\n Please Do Raid As Soon As Possible.\n||If Done , Do `sgr` Once||';
                     messageOrInteraction.channel.send(raidPingMessage);
@@ -218,16 +209,7 @@ module.exports={
     },
     name:'raidstatus',
     description:'Shows Raid Status after a certain time.',
-    arguments:1,
-    format:'`!rs time\n\n> time -> 1h for last hour raids.`',
-    options:[
-        {
-            name:'time',
-            description:'Time interval for raid status. (30m,1h)',
-            type:ApplicationCommandOptionType.String,
-            required:true,
-        },
-    ],
+    arguments:0,
+    format:'`!rs `',
     alias:['rs',],
-    devsOnly:true,
 }
