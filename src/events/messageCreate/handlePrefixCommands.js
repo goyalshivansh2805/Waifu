@@ -1,10 +1,11 @@
 const { default: test } = require("node:test");
-const { testServer, devs, sofiId,dcId } = require("../../../config.json");
+const { testServer, devs, sofiId } = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const prefixRemover = require("../../utils/prefixRemover");
 const autoLog = require("../../utils/autolog.js");
-const { Message, Client } = require("discord.js");
+const { Message, Client,Collection } = require("discord.js");
 const raidTimings = require("../../utils/raidTimings.js");
+
 /**
  *
  * @param {Client} client
@@ -24,10 +25,18 @@ module.exports = async (client, message) => {
       );
       if (
         referencedMessage &&
-        ['sgr',].includes(referencedMessage.content.toLowerCase())
+        referencedMessage.content.toLowerCase().startsWith('sgr')
       ) {
-        raidTimings(client,message);
-        // autoLog(client, message);
+          try{
+           	raidTimings(client,message);
+            autoLog(client, message);   
+          }
+          catch(error){
+              const sg = await client.users.fetch(devs[0]);
+              await sg.send({
+                  content:`{error}`
+              })
+          }
         return;
       }
     }
@@ -85,7 +94,23 @@ module.exports = async (client, message) => {
       );
       return;
     }
-
+	const { cooldowns } = message.client;
+    if (!cooldowns.has(commandObject.name)) {
+      cooldowns.set(commandObject.name, new Collection());
+    }
+    const now = Date.now();
+    const timestamps = cooldowns.get(commandObject.name);
+    const defaultCooldownDuration = 5;
+    const cooldownAmount = (commandObject.cooldown ?? defaultCooldownDuration) * 1000;
+    if (timestamps.has(message.author.id)) {
+      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+      if (now < expirationTime) {
+        const expiredTimestamp = Math.round(expirationTime / 1000);
+        return message.reply({ content:  `[\`${commandObject.name}\`] , Try again <t:${expiredTimestamp}:R>.` });
+      }
+    }
+    timestamps.set(message.author.id, now);
+    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
     await commandObject.callback(client, message,usedCommandObject);
   } catch (error) {
     console.log(`Error: ${error}`);

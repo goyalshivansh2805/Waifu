@@ -40,20 +40,23 @@ module.exports = {
                     type = usedCommandObject.commandArguments[0]?usedCommandObject.commandArguments[0]:'score';
                     type.toLowerCase();
                     const targetUserOption = usedCommandObject.commandArguments[1];
-                    if (targetUserOption && targetUserOption.startsWith('<@')) {
-                        const match = targetUserOption.match(/^<@!?(\d+)>$/);
-                        if (match) {
-                            targetUserOption = match[1];
+                    if (targetUserOption) {
+                        targetUserId = targetUserOption;
+                        if(targetUserOption.startsWith('<@')){
+                            const match = targetUserOption.match(/^<@!?(\d+)>$/);
+                            if (match) {
+                                targetUserId = match[1];
+                       		 }
                         }
                     }
-                    if(!sortTypes.includes(type)) {messageOrInteraction.reply('Please Enter a valid sort type.'); return;}
+                    if(!sortTypes.includes(type)) {messageOrInteraction.reply('Please Enter a valid sort type.\n`score/raid/combined/rewards`'); return;}
                 }
             }else{
                 authorId = messageOrInteraction.user.id;
                 targetUserId = messageOrInteraction.user.id;
                 const targetUserOption = await messageOrInteraction.options.get('user');
                 type = await messageOrInteraction.options.get('type')?.value;
-                if(!type) type = 'score';
+                if(!type) type='score';
                 if(targetUserOption){
                     targetUserId = targetUserOption.value;
                 }
@@ -96,6 +99,8 @@ module.exports = {
             if(type === 'rewards' || type === 'reward') guildPlayers.sort((a,b)=> b.elixir - a.elixir);
             if (type === 'combined') {
                 // Assign points for score
+                guildPlayers.sort((a,b)=> (b.raidsParticipated ? b.totalScore / b.raidsParticipated.toFixed(2) : 0) -
+            (a.raidsParticipated ? a.totalScore / a.raidsParticipated.toFixed(2) : 0));
                 const scorePoints = guildPlayers
                     .map((player, index) => ({ user: player.userId, points: guildPlayers.length - index }))
                     .reduce((acc, curr) => {
@@ -103,6 +108,7 @@ module.exports = {
                         return acc;
                     }, {});
                 // Assign points for raids
+                guildPlayers.sort((a,b)=> b.raidsParticipated - a.raidsParticipated);
                 const raidPoints = guildPlayers
                     .map((player, index) => ({ user: player.userId, points: guildPlayers.length - index }))
                     .reduce((acc, curr) => {
@@ -121,7 +127,7 @@ module.exports = {
                 if(type === 'combined') break;
                 if(index<recordsPerPage){
                     if(type === 'raids' || type === 'raid') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.raidsParticipated}**\n`;
-                    if(type == 'score') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.raidsParticipated?guildPlayer.totalScore/guildPlayer.raidsParticipated.toFixed(2):0}**\n`;
+                    if(type == 'score') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.raidsParticipated?(guildPlayer.totalScore/guildPlayer.raidsParticipated).toFixed(2):0}**\n`;
                     if(type === 'reward' || type === 'rewards') pageDescription+=`${++i} : <@${guildPlayer.userId}> : **${guildPlayer.elixir}** <:Elixir:1198549045732442178> : **${guildPlayer.shard}** <:Shard:1198548958654517289> \n`;
                     index++;
                 };
@@ -195,6 +201,5 @@ module.exports = {
     alias:['lb'],
     arguments:0,
     format:'`!leaderboard`',
-    devsOnly:true,
 
 };

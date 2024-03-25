@@ -1,1 +1,1 @@
-handlers
+client.cooldowns = new Collection();

@@ -217,5 +217,4 @@ module.exports = {
     arguments:2,
     format:'`!guildpromote user rank`',
     alias:['gpu'],
-    devsOnly:true,
 }

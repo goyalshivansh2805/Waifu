@@ -15,6 +15,7 @@ module.exports = {
                 message.reply('Please provide a mathematical expression.');
                 return;
             }
+
             let result = null;
             try {
                 result = eval(args);
@@ -28,8 +29,7 @@ module.exports = {
                 message.reply('Invalid mathematical expression.');
             } 
         } catch (error) {
-            console.error(`Error while executing math command: ${error}`);
-            message.reply('An error occurred while processing the mathematical expression.');
+            message.reply(error.message);
         }
 
     },

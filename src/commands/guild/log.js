@@ -5,7 +5,7 @@ const {devs} = require('../../../config.json');
 
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
-const raidLogChannelId = '1198995652307325100';
+const raidLogChannelId = '1180155049620549724';
 
 const embedColors = {
     success: 0x00ff00,
@@ -173,6 +173,6 @@ module.exports = {
     ],
     alias:['l'],
     arguments:2,
+    cooldown:5,
     format:'`!log user score moves damage`',
-    devsOnly:true,
 }

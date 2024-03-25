@@ -62,7 +62,7 @@ module.exports = {
                 };
                 todayAverage = (todayTotalScore/todayRaids).toFixed(2);
             };
-            const lastRaidTimestamp = Math.floor(logs[0]?.createdAt.getTime() / 1000) || 'No Data';
+            const lastRaidTimestamp = Math.floor(logs[0]?.createdAt.getTime() / 1000) || 1623600660;
             if(!user){
                 const messageEmbed = new EmbedBuilder()
                     .setTitle('Records Not Found ')
@@ -107,5 +107,4 @@ module.exports = {
     alias:['rc'],
     arguments:0,
     format:'`!raidcount`',
-    devsOnly:true,
 };

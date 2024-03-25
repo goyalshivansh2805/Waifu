@@ -200,6 +200,5 @@ module.exports = {
     ],
     alias:['gr'],
     arguments:1,
-    format:'`!guildremove userid/user`',
-    devsOnly:true,
+    format:'`!guildremove userid/user`'
 }

@@ -71,6 +71,8 @@ module.exports = {
             if(type === 'rewards' || type === 'reward') guildPlayers.sort((a,b)=> b.elixir - a.elixir);
             if (type === 'combined') {
                 // Assign points for score
+                guildPlayers.sort((a,b)=> (b.raidsParticipated ? b.totalScore / b.raidsParticipated.toFixed(2) : 0) -
+            (a.raidsParticipated ? a.totalScore / a.raidsParticipated.toFixed(2) : 0));
                 const scorePoints = guildPlayers
                     .map((player, index) => ({ user: player.userId, points: guildPlayers.length - index }))
                     .reduce((acc, curr) => {
@@ -78,6 +80,7 @@ module.exports = {
                         return acc;
                     }, {});
                 // Assign points for raids
+                guildPlayers.sort((a,b)=> b.raidsParticipated - a.raidsParticipated);
                 const raidPoints = guildPlayers
                     .map((player, index) => ({ user: player.userId, points: guildPlayers.length - index }))
                     .reduce((acc, curr) => {
@@ -165,5 +168,5 @@ module.exports = {
     alias:['glb'],
     arguments:0,
     format:'`!globalleaderboard`',
-    devsOnly:true,
+
 };

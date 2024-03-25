@@ -171,5 +171,4 @@ module.exports = {
     alias:['gc'],
     arguments:1,
     format:'`!guildcreate guild-name`',
-    devsOnly:true,
 }

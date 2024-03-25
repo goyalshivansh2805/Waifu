@@ -29,20 +29,36 @@ module.exports = {
       try {
         
         if(!messageOrInteraction.inGuild()) return; 
+        let targetUserId = null;  
         let authorId = null;
         if(messageOrInteraction instanceof Message){
-          authorId = messageOrInteraction.author.id;
+            authorId = messageOrInteraction.author.id;
+            targetUserId = messageOrInteraction.author.id;
+            if(usedCommandObject.commandArguments.length){
+                targetUserId = usedCommandObject.commandArguments[0];
+                if (targetUserId.startsWith('<@')) {
+                    const match = targetUserId.match(/^<@!?(\d+)>$/);
+                    if (match) {
+                        targetUserId = match[1];
+                    }
+                }
+            }
         }else{
-          authorId = messageOrInteraction.user.id;
-        };
+            authorId = messageOrInteraction.user.id;
+            targetUserId = messageOrInteraction.user.id;
+            const targetUserOption = await messageOrInteraction.options.get('user');
+            if(targetUserOption){
+                targetUserId = targetUserOption.value;
+            }
+        }
         const authorUser = await client.users.fetch(authorId);
-        let authorUserData = await User.findOne({
-          userId:authorId
+        let targetUserData = await User.findOne({
+          userId:targetUserId
         });
-        let authorLogs = await Log.find({
-          userId:authorId,
+        let targetLogs = await Log.find({
+          userId:targetUserId,
         }).sort({ createdAt: -1 });
-        if(!authorUserData || !authorLogs){
+        if(!targetUserData || !targetLogs){
           const noDataEmbed = buildEmbed(embedColors.failure,'Records Not Found','Please Raid atleast Once,then use this command.',authorUser);
           messageOrInteraction.reply({embeds:[noDataEmbed]});
           return;
@@ -52,13 +68,13 @@ module.exports = {
         let index = 0;
         let i=0;
         let pageEmbed = null;
-        for(const authorLog of authorLogs){
-          if(index === 0) pageEmbed = buildEmbed(embedColors.info , `Raid Logs`,`<@${authorId}> : **${authorUserData.guildName?authorUserData.guildName:'Waifu'}**`,authorUser,logsArray.length +1);
+        for(const targetLog of targetLogs){
+          if(index === 0) pageEmbed = buildEmbed(embedColors.info , `Raid Logs`,`<@${targetUserId}> : **${targetUserData.guildName?targetUserData.guildName:'Waifu'}**`,authorUser,logsArray.length +1);
           if(index<logsPerPage){
-            const timestamp = Math.floor(authorLog.createdAt.getTime() / 1000);
+            const timestamp = Math.floor(targetLog.createdAt.getTime() / 1000);
             pageEmbed.addFields({
               name: ` `,
-              value: `${++i} : Score:**${authorLog.score}** | Moves:**${authorLog.move}** | Damage:**${authorLog.damage}** | <t:${timestamp}:R>\n`,
+              value: `${++i} : Score:**${targetLog.score}** | Moves:**${targetLog.move}** | Damage:**${targetLog.damage}** | <t:${timestamp}:R>\n`,
           });
             index++;
           };

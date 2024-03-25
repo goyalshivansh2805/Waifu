@@ -82,7 +82,7 @@ module.exports = {
             users.sort((a,b)=> b.guildPosition-a.guildPosition );
             let guildInfo = '';
             users.forEach((user)=>{
-                const averageScore = user.raidsParticipated?user.totalScore/user.raidsParticipated.toFixed(2):0;
+                const averageScore = user.raidsParticipated?(user.totalScore/user.raidsParticipated).toFixed(2):0;
                 const role = positionToRole(user.guildPosition);
                 guildInfo += `**${role}** : <@${user.userId}> : ${averageScore} Avg\n`
             });
@@ -106,5 +106,4 @@ module.exports = {
     alias:['gi'],
     arguments:0,
     format:'`!guildinfo`',
-    devsOnly:true,
 }

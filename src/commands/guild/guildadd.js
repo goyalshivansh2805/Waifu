@@ -120,7 +120,7 @@ module.exports = {
                     components:[buttonRow]
                 }
             );
-            const filter = (i) => i.user.id === authorId;
+            const filter = (i) => i.user.id === targetUserId;
             const collector = reply.createMessageComponentCollector(
                 {
                     componentType:ComponentType.Button,
@@ -202,5 +202,4 @@ module.exports = {
     alias:['ga'],
     arguments:1,
     format:'`!guildadd userid/user`',
-    devsOnly:true,
 }

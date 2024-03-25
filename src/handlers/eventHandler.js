@@ -8,6 +8,7 @@ module.exports = (client) =>{
         eventFiles.sort((a,b)=>a>b);
         
         const eventName = path.basename(eventFolder.replace(/\\\\/g, '\\'));
+
         client.on(eventName,async (arg)=>{
             for(const eventFile of eventFiles){
                 const eventFunction = require(eventFile);

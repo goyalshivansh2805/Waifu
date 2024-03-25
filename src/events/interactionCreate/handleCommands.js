@@ -1,5 +1,6 @@
 const { default: test } = require("node:test");
 const { testServer, devs } = require("../../../config.json");
+const {Collection } = require('discord.js');
 const getLocalCommands = require("../../utils/getLocalCommands");
 
 module.exports = async (client, interaction) => {
@@ -53,7 +54,23 @@ module.exports = async (client, interaction) => {
             }
         }
     }
-
+	const { cooldowns } = interaction.client;
+    if (!cooldowns.has(commandObject.name)) {
+      cooldowns.set(commandObject.name, new Collection());
+    }
+    const now = Date.now();
+    const timestamps = cooldowns.get(commandObject.name);
+    const defaultCooldownDuration = 5;
+    const cooldownAmount = (commandObject.cooldown ?? defaultCooldownDuration) * 1000;
+    if (timestamps.has(interaction.user.id)) {
+      const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+      if (now < expirationTime) {
+        const expiredTimestamp = Math.round(expirationTime / 1000);
+        return interaction.reply({ content:  `[\`${commandObject.name}\`] , Try again <t:${expiredTimestamp}:R>.` });
+      }
+    }
+    timestamps.set(interaction.user.id, now);
+    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
     await commandObject.callback(client,interaction);
   } catch (error) {
     console.log(`Error: ${error}`);

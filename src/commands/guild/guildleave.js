@@ -62,7 +62,7 @@ module.exports = {
                 messageOrInteraction.reply('Error while leaving guild. Please contact Developers.');
                 return;
             }
-            if(author.id === userGuild.ownerId){
+            if(authorId === userGuild.ownerId){
                 const messageEmbed = buildEmbed(embedColors.failure,'Process Failed.','You cannot leave this guild.',authorUser);
                 messageOrInteraction.reply({
                     embeds:[messageEmbed]
@@ -151,5 +151,4 @@ module.exports = {
     alias:['gl'],
     arguments:0,
     format:'`!guildleave`',
-    devsOnly:true,
 }

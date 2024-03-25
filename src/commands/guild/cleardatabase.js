@@ -1,9 +1,10 @@
 const {Message,Interaction,InteractionCollector,Client,ActionRowBuilder,ButtonBuilder,ButtonStyle,EmbedBuilder,ApplicationCommandOptionType,ComponentType} = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const Log = require('../../models/Log');
 const {devs,admins} = require('../../../config.json');
 
-const raidLogChannelId = '1198995652307325100';
+const raidLogChannelId = '1180155049620549724';
 
 const embedColors = {
     success: 0x00ff00,
@@ -84,7 +85,7 @@ module.exports = {
                     return;
                 };
             }else{
-                if(!devs.includes(authorId) | !admins.include(authorId)){
+                if(!devs.includes(authorId) && !admins.includes(authorId)){
                     const notEnoughPermsEmbed = buildEmbed(embedColors.failure,'Not Enough Permission','You do not have permission to use this command.',authorUser);
                     messageOrInteraction.reply({embeds:[notEnoughPermsEmbed]});
                     return;
@@ -99,8 +100,9 @@ module.exports = {
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId('database-clear-no');
             const buttonRow = new ActionRowBuilder().addComponents(successButton,failureButton);
-
-            const confirmationEmbed = buildEmbed(embedColors.process,'Confirmation Needed.',`<@${authorId}> , Do you want to clear the database for guild **${guildName}** ?`,authorUser);
+			let confirmationEmbed = null;
+            if(!allGuilds) confirmationEmbed = buildEmbed(embedColors.process,'Confirmation Needed.',`<@${authorId}> , Do you want to clear the database for guild **${guildName}** ?`,authorUser);
+            else confirmationEmbed = buildEmbed(embedColors.process,'Confirmation Needed.',`<@${authorId}> , Do you want to clear the database for all guilds?`,authorUser);
             const reply = await messageOrInteraction.reply(
                 {
                     embeds:[confirmationEmbed],
@@ -143,6 +145,7 @@ module.exports = {
                             guildPlayer.elixir = 0;
                             guildPlayer.totalScore = 0;
                             guildPlayer.shard = 0;
+                            await Log.deleteMany({userId:guildPlayer.userId});
                             await guildPlayer.save();
                         });
                         let successMessage = null;

@@ -90,6 +90,18 @@ const guildCommands = [
         format:'cdb',
         description:'Clears your guild database.',
     },
+    {
+        name:'raidstatus',
+        alias:'rs',
+        format:'rs time',
+        description:'Shows Raid Status for a given time.',
+    },
+    {
+        name:'sheet',
+        alias:'sh',
+        format:'sh',
+        description:'Generates a sheet with Players Stats.',
+    }
 ];
 
 
@@ -147,8 +159,9 @@ module.exports = {
                   pageDescription += `• **${guildCommand.name}** (${guildCommand.alias}): ${guildCommand.description}\n    Format: \`${guildCommand.format}\`\n\n`;
                 }
               }
-              
-
+            if(type === 'user'){
+                			pageDescription += '> PS : Use `!help guild` for guild related commands'
+            };
             const helpEmbed = buildEmbed(embedColors.info,`Waifu - Prefix  **!**  : **${type.toUpperCase()}** Commands`,pageDescription,authorUser,1);
             helpEmbed.setThumbnail(messageOrInteraction.guild.members.me.displayAvatarURL())
             messageOrInteraction.reply({embeds:[helpEmbed]});
@@ -179,5 +192,4 @@ module.exports = {
     arguments:0,
     format:'`!help`',
     alias:[],
-    devsOnly:true,
 }

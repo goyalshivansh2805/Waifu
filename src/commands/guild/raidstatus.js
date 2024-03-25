@@ -64,6 +64,7 @@ module.exports={
             logsForPlayers.sort((a,b) => {
                 return b.log.score - a.log.score;
             });
+            
             const currentRaid = await Raid.findOne().sort({ createdAt: -1 });
             if(!currentRaid) {
                 messageOrInteraction.reply('Please do sgr once or contact sg');
@@ -71,12 +72,25 @@ module.exports={
             };
             let raidDoneCount = 0;
             let remainingRaidersCount = 0;
+            const userIdsInLogs = new Set(logsForPlayers.map(log => log._id));
+            // Iterate over guildPlayers and add logs for users who don't have any
+            for (const player of guildPlayers) {
+                if (!userIdsInLogs.has(player.userId)) {
+                    logsForPlayers.push({ _id: player.userId, log: null });
+                }
+            }
             const startingTimestamp = currentRaid.startingTimestamp;
             const endingTimestamp = currentRaid.endingTimestamp;
             let guildTotalScore = 0;
             for(let i = 0; i < logsForPlayers.length; i++){
                 try {
                     const lastLog = logsForPlayers[i];
+                    if(!lastLog.log){
+                        remainingRaidersPageDescription += `• <@${lastLog._id}>\n`;
+                        remainingRaiders.push(lastLog._id);
+                        remainingRaidersCount++;
+                        continue;
+                    }
                     if (!lastLog ) {
                         remainingRaidersPageDescription += `• <@${lastLog.log.userId}>\n`;
                         remainingRaiders.push(lastLog.log.userId);

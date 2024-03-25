@@ -78,7 +78,7 @@ module.exports = {
                     return;
             };
             if(author.guildPosition===0){
-                const failureMessage = buildEmbed(embedColors.failure,'Process Failed.',`<@${authorId}> , You do not have enough permission to add members into the guild **${author.guildName}**.`,authorUser);
+                const failureMessage = buildEmbed(embedColors.failure,'Process Failed.',`<@${authorId}> , You do not have enough permission to use this command.`,authorUser);
                 message.reply({embeds:[failureMessage]});
                 return;
             };
@@ -121,7 +121,7 @@ module.exports = {
                     files:[
                         {
                             attachment:filePath,
-                            name:`${guildName.toUpperCase()}.xlsx`
+                            name:`${guildName}.xlsx`
                         }
                     ]
                 }
@@ -136,4 +136,5 @@ module.exports = {
     description:'Provides a detailed sheet for your guild',
     alias:['sh'],
     deleted:true,
+    cooldown:15,
 }

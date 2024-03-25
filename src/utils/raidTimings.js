@@ -12,11 +12,17 @@ module.exports = async (client , message)=>{
             return new Promise((resolve) => {
                 setTimeout(()=>{
                     title = message.embeds[0].title;
-                    const raidEndTiming = title.match(/\<t\:(\d+)\:R\>/);
-                    if(!raidEndTiming) return;
-                    raidEndTimestamp = parseInt(raidEndTiming[1],10);
-                    resolve();
-                },3000);
+                    if(!title) return;
+                    try{
+                     	const raidEndTiming = title.match(/\<t\:(\d+)\:R\>/);   
+                        if(!raidEndTiming) return;
+                    	raidEndTimestamp = parseInt(raidEndTiming[1],10);
+                    	resolve();
+                    }
+                    catch (error){
+                        return console.log(error);
+                    }
+                },4000);
             });
         };
 

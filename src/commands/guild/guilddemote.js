@@ -131,5 +131,4 @@ module.exports = {
     arguments:2,
     format:'`!guilddemote user rank`',
     alias:['gdu'],
-    devsOnly:true,
 }
