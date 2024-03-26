@@ -1,7 +1,7 @@
 const {EmbedBuilder,InteractionCollector,Message,ApplicationCommandOptionType, Client} = require('discord.js');
 const User = require('../../models/User');
 const Log = require('../../models/Log');
-const {devs} = require('../../../config.json');
+const {admins} = require('../../../config.json');
 
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
@@ -94,7 +94,7 @@ module.exports = {
                 messageOrInteraction.reply({embeds:[notInSameGuildEmbed]});
                 return;
             };
-            if(authorUserData.guildPosition===0 && !devs.includes(authorId)){
+            if(!admins.includes(authorId)){
                 const notEnoughPermsEmbed = buildEmbed(embedColors.failure,'Not Enough Permission','You do not have permission to use this command.',authorUser);
                 messageOrInteraction.reply({embeds:[notEnoughPermsEmbed]});
                 return;
