@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
 const Raid = require('../../models/Raid');
+const GuildReminder = require('../../models/GuildReminder');
 
 const embedColors = {
     success: 0x00ff00,
@@ -42,18 +43,22 @@ module.exports={
                     userId:authorId,
                 }
             );
+            if(!author || !author.guildName){
+                const messageEmbed = buildEmbed(embedColors.failure,'Process Failed.','You are not in any guild.',authorUser);
+                messageOrInteraction.reply({
+                    embeds:[messageEmbed]
+                });
+                return;
+            };
             const guildPlayers = await User.find({
                 guildName:author.guildName,
             });
-            if(!author || !author.guildName){
-                const messageEmbed = buildEmbed(embedColors.failure,'Process Failed.','You are not in any guild.',authorUser);
-                    messageOrInteraction.reply({
-                        embeds:[messageEmbed]
-                    });
-                    return;
-            };
+            let raidRemindData = await GuildReminder.findOne({guildName:author.guildName});
+            if(!raidRemindData){
+                raidRemindData = new GuildReminder({guildName:author.guildName});
+            }
             let i=0;
-            let remainingRaidersPageDescription = '';
+            let remainingRaidersPageDescription = `**Pings : ${raidRemindData.noOfPings}**\n\n`;
             let raidsDoneDescription = '';
   
             const logsForPlayers = await Log.aggregate([
@@ -188,10 +193,13 @@ module.exports={
                                 embeds:[notEnoughPermsEmbed],
                                 components:[buttonRow],
                             },
-                        );
-                        return;
-                    };
+                            );
+                            return;
+                        };
+                
                     let raidPingMessage = '';
+                    raidRemindData.noOfPings += 1 ;
+                    await raidRemindData.save();
                     for(const remainingRaider of remainingRaiders){
                         raidPingMessage += `• <@${remainingRaider}>\n`
                     };
