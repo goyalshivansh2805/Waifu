@@ -132,8 +132,10 @@ module.exports = {
             if(!messageOrInteraction.inGuild()) return;
             let type = 'user'
             let authorId = null;
+            let authorUser = null;
             if(messageOrInteraction instanceof Message){
                 authorId = messageOrInteraction.author.id;
+                authorUser = await client.users.fetch(authorId);
                 if(usedCommandObject.commandArguments.length){
                     type = usedCommandObject.commandArguments[0];
                     type = type.toLowerCase();
@@ -145,9 +147,9 @@ module.exports = {
                 };
             }else{
                 authorId = messageOrInteraction.user.id;
+                authorUser = await client.users.fetch(authorId);
                 type = await messageOrInteraction.options.get('type').value;
             };
-            const authorUser = await client.users.fetch(authorId);
 
             let pageDescription = '';
             if (type === 'user') {
