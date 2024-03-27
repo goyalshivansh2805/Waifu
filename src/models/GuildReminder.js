@@ -14,9 +14,17 @@ const guildReminderSchema = new Schema(
             type:Number,
             default:60
         },
-        noOfPings:{
+        noOfManualPings:{
             type:Number,
             default:0
+        },
+        noOfAutoPings:{
+            type:Number,
+            default:0
+        },
+        channelId:{
+            type:String,
+            default:null
         }
     }
 )
