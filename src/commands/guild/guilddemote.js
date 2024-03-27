@@ -1,6 +1,7 @@
 const {Message,Interaction,InteractionCollector,Client,ActionRowBuilder,ButtonBuilder,ButtonStyle,EmbedBuilder,ApplicationCommandOptionType,ComponentType} = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const errorManager = require("../../utils/errorLogs");
 
 function rankToPosition(rank){
     rank = rank.toLowerCase();
@@ -103,7 +104,7 @@ module.exports = {
             messageOrInteraction.reply({embeds:[promotionSuccessEmbed]});
             return;
         } catch (error) {
-            console.log(`Error while demoting user: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'guilddemote',

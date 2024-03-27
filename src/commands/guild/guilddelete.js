@@ -1,6 +1,7 @@
 const {Message,Interaction,InteractionCollector,Client,ActionRowBuilder,ButtonBuilder,ButtonStyle,EmbedBuilder,ApplicationCommandOptionType,ComponentType} = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const errorManager = require("../../utils/errorLogs");
 
 const embedColors = {
     success: 0x00ff00,
@@ -146,7 +147,7 @@ module.exports = {
                 }
             });
         } catch (error) {
-            console.log(`Error while deleting guild: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'guilddelete',

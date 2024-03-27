@@ -1,6 +1,7 @@
 const {Message,Interaction,InteractionCollector,Client,ActionRowBuilder,ButtonBuilder,ButtonStyle,EmbedBuilder,ApplicationCommandOptionType,ComponentType} = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const errorManager = require("../../utils/errorLogs");
 const Log = require('../../models/Log');
 const {devs,admins} = require('../../../config.json');
 
@@ -196,7 +197,7 @@ module.exports = {
             });
 
         } catch (error) {
-            console.log(`Error while Using cleardb : ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'cleardatabase',

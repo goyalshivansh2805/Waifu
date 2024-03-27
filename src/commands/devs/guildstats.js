@@ -1,6 +1,7 @@
 const {Message,Client,EmbedBuilder} = require('discord.js');
 const User = require('../../models/User');
 const Log = require('../../models/Log');
+const errorManager = require("../../utils/errorLogs");
 const Guild = require('../../models/Guild');
 
 module.exports = {
@@ -26,7 +27,7 @@ module.exports = {
                 .setTimestamp();
             message.reply({embeds:[stats]});
         } catch (error) {
-            console.log(`Error: ${error}`);
+            await errorManager(client,message,usedCommandObject,error);
         }
     },
     name:'guildstats',

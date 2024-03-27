@@ -2,6 +2,7 @@ const {ApplicationCommandOptionType,Client,Interaction,Message,EmbedBuilder, Emb
 const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
+const errorManager = require("../../utils/errorLogs");
 const pagination = require('../../utils/pagination');
 
 const embedColors = {
@@ -135,7 +136,7 @@ module.exports = {
             const currentPage = await pagination(client,messageOrInteraction,authorId,leaderboardPages);
             }
         catch (error) {
-            console.log(`Error While Using lb: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }   
     },
     name:'globalleaderboard',

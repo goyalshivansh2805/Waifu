@@ -1,6 +1,7 @@
 const {Client,Interaction,Message,EmbedBuilder,ApplicationCommandOptionType, embedLength,ButtonBuilder,ButtonStyle,ActionRowBuilder,ComponentType}  = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const errorManager = require("../../utils/errorLogs");
 
 const embedColors = {
     success: 0x00ff00,
@@ -186,7 +187,7 @@ module.exports = {
             });
 
         } catch (error) {
-            console.log(`Error While Adding Player in the guild: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'guildadd',

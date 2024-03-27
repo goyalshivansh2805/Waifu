@@ -1,5 +1,5 @@
 const {EmbedBuilder,InteractionCollector,Message,ApplicationCommandOptionType, Client} = require('discord.js');
-
+const errorManager = require("../../utils/errorLogs");
 const helpType = ['user','guild'];
 
 const userCommands = [
@@ -168,7 +168,7 @@ module.exports = {
             helpEmbed.setThumbnail(messageOrInteraction.guild.members.me.displayAvatarURL())
             messageOrInteraction.reply({embeds:[helpEmbed]});
         } catch (error) {
-            console.log(`Errow while using help: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'help',

@@ -1,5 +1,6 @@
 const { Client, Message, EmbedBuilder, version: discordJsVersion } = require('discord.js');
 const os = require('os');
+const errorManager = require("../../utils/errorLogs");
 
 module.exports = {
     callback: async (client, message, usedCommandObject) => {
@@ -45,7 +46,7 @@ module.exports = {
             // Send the embed as a reply
             message.reply({ embeds: [embed] });
         } catch (error) {
-            console.error(`Error in stats command: ${error}`);
+            await errorManager(client,message,usedCommandObject,error);
         }
     },
     name: 'stats',

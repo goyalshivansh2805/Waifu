@@ -1,6 +1,7 @@
 const {ApplicationCommandOptionType,Client,Interaction,Message,EmbedBuilder, Embed} = require('discord.js');
 const User = require('../../models/User');
 const Log = require('../../models/Log');
+const errorManager = require("../../utils/errorLogs");
 const { timeStamp } = require('console');
 
 module.exports = {
@@ -92,7 +93,7 @@ module.exports = {
             });
             }
         catch (error) {
-            console.log(`Error While Using rc: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }   
     },
     name:'raidcount',

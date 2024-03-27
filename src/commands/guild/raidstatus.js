@@ -5,6 +5,7 @@ const Guild = require('../../models/Guild');
 const Raid = require('../../models/Raid');
 const RaidDetails = require('../../utils/raidedAndRemaining');
 const GuildReminder = require('../../models/GuildReminder');
+const errorManager = require("../../utils/errorLogs");
 
 const embedColors = {
     success: 0x00ff00,
@@ -161,7 +162,7 @@ module.exports={
                 };
             });
         } catch (error) {
-            console.log(`Error : ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'raidstatus',

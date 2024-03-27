@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
 const pagination = require('../../utils/pagination');
+const errorManager = require("../../utils/errorLogs");
 
 const embedColors = {
     success: 0x00ff00,
@@ -163,7 +164,7 @@ module.exports = {
             const currentPage = await pagination(client,messageOrInteraction,authorId,leaderboardPages);
             }
         catch (error) {
-            console.log(`Error While Using lb: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }   
     },
     name:'leaderboard',

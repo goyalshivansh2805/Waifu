@@ -1,4 +1,5 @@
 const {Client,Message} = require('discord.js');
+const errorManager = require("../../utils/errorLogs");
 
 module.exports = {
     /**
@@ -29,7 +30,7 @@ module.exports = {
                 message.reply('Invalid mathematical expression.');
             } 
         } catch (error) {
-            message.reply(error.message);
+            await errorManager(client,message,usedCommandObject,error);
         }
 
     },

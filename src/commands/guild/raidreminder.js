@@ -1,6 +1,7 @@
 const {Client,ModalBuilder,ChannelSelectMenuBuilder,TextInputBuilder,TextInputStyle,Interaction,Message,EmbedBuilder,ApplicationCommandOptionType, embedLength,ButtonBuilder,ButtonStyle,ActionRowBuilder,ComponentType, ChannelType, SelectMenuBuilder, StringSelectMenuBuilder}  = require('discord.js');
 const Guild = require('../../models/Guild');
 const User = require('../../models/User');
+const errorManager = require("../../utils/errorLogs");
 const GuildReminder = require('../../models/GuildReminder');
 
 ""
@@ -33,6 +34,7 @@ module.exports = {
      */
     callback: async (client , message , usedCommandObject) => {
         try{
+            
             if(!message.inGuild()) return;
             const authorId = message.author.id;
             const authorUser = await client.users.fetch(authorId);
@@ -100,28 +102,6 @@ module.exports = {
                 }
             );
 
-            
-            // let isResponded = false;
-            // selectMenuCollector.on("collect",async (interaction)=>{
-            //     if(interaction.customId === "channel-select-menu"){
-            //         interaction.deferUpdate();
-            //         isResponded = true;
-            //         let newChannelId = null;
-            //         if(!interaction.values.length){
-            //             channelMention = "**NOT SELECTED**";
-            //         }else{
-            //             newChannelId = interaction.values[0];
-            //             channelMention = `<#${newChannelId}>`;
-            //         }
-            //         raidRemindData.channelId = newChannelId;
-            //         await raidRemindData.save();
-            //         msg.setDescription(`Reminder : ${status(raidRemindData.status)}\nRemind Before : ${raidRemindData.remindTime} Minutes\nChannel : ${channelMention}`);
-            //         await reply.edit({
-            //             embeds:[msg],
-            //             components:[firstRow,row],
-            //         })
-            //     }
-            // });
             buttonCollector.on("collect", async(interaction)=>{
                 if(interaction.customId === "enable-button"){
                     interaction.deferUpdate();
@@ -247,7 +227,7 @@ module.exports = {
             
         }
         catch (error){
-            console.log(error);
+            await errorManager(client,message,usedCommandObject,error);
         }
     },
     name:'raidreminder',

@@ -1,6 +1,7 @@
 const {EmbedBuilder,InteractionCollector,Message,ApplicationCommandOptionType, Client} = require('discord.js');
 const User = require('../../models/User');
 const Log = require('../../models/Log');
+const errorManager = require("../../utils/errorLogs");
 const pagination = require('../../utils/pagination');
 
 const embedColors = {
@@ -88,7 +89,7 @@ module.exports = {
         };
         const currentPage = await pagination(client,messageOrInteraction,authorId,logsArray);
       } catch (error) {
-        console.log(`Error While Using vl: ${error}`);
+        await errorManager(client,messageOrInteraction,usedCommandObject,error);
       }
     },
     name:'viewlogs',

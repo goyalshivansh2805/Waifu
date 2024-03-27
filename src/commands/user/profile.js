@@ -2,7 +2,7 @@ const {ApplicationCommandOptionType,Client,Interaction,Message,EmbedBuilder, Emb
 const User = require('../../models/User');
 const { triggerAsyncId } = require('async_hooks');
 const Image = require('../../models/Image');
-
+const errorManager = require("../../utils/errorLogs");
 defaultRcImageURL = "https://media1.tenor.com/m/mJ_Og97j5WwAAAAC/chipi-chapa.gif";
 module.exports = {
     /**
@@ -76,7 +76,7 @@ module.exports = {
             });
             }
         catch (error) {
-            console.log(`Error While Using rc: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }   
     },
     name:'profile',

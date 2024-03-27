@@ -1,6 +1,7 @@
 const {devs } = require('../../../config.json');
 require('dotenv').config();
 const {EmbedBuilder} = require('discord.js');
+const errorManager = require("../../utils/errorLogs");
 
 
 const embedColors = {
@@ -34,7 +35,7 @@ module.exports = {
         .then(await client.destroy())
         .then(await client.login(process.env.TOKEN))
           } catch(e) {
-            message.channel.send(`ERROR: ${e.message}`)
+            await errorManager(client,message,usedCommandObject,error);
 
     }
     },

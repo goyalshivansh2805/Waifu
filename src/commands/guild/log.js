@@ -2,6 +2,7 @@ const {EmbedBuilder,InteractionCollector,Message,ApplicationCommandOptionType, C
 const User = require('../../models/User');
 const Log = require('../../models/Log');
 const {admins} = require('../../../config.json');
+const errorManager = require("../../utils/errorLogs");
 
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
@@ -142,7 +143,7 @@ module.exports = {
         );
 
         } catch (error) {
-            console.log(`Error while using log: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'log',

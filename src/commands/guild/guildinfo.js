@@ -2,6 +2,7 @@ const {ApplicationCommandOptionType,Client,Interaction,Message,EmbedBuilder, Emb
 const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
+const errorManager = require("../../utils/errorLogs");
 
 const embedColors = {
     success: 0x00ff00,
@@ -91,7 +92,7 @@ module.exports = {
             messageOrInteraction.reply({embeds:[guildInfoEmbed]});
             
         } catch (error) {
-            console.log(`Error while showing guild info: ${error}`);
+            await errorManager(client,messageOrInteraction,usedCommandObject,error);
         }
     },
     name:'guildinfo',

@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const Log = require('../../models/Log');
 const Guild = require('../../models/Guild');
 const Raid = require('../../models/Raid');
+const errorManager = require("../../utils/errorLogs");
 const {Workbook} = require('exceljs');
 const fs = require('fs');
 
@@ -127,7 +128,7 @@ module.exports = {
                 }
             )
         } catch (error) {
-            console.log(`Error: ${error}`);
+            await errorManager(client,message,usedCommandObject,error);
         }
     },
     name:'sheet',
