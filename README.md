@@ -14,14 +14,13 @@
 - **Raid System Management**: Handles data for raids within the Sofi ecosystem.
 - **Cooldown Tracking**: Manages cooldowns for raid commands, preventing spam.
 - **Data Storage**: Stores raid-related information for easy retrieval and analysis.
-- **Support for Sofi**: Designed specifically to support Sofi in its card-collecting system.
 
 ## Installation
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/waifu-bot.git
-   cd waifu-bot
+   git clone https://github.com/goyalshivansh2805/Waifu.git
+   cd Waifu
 2. **Install dependencies**: Ensure that you have Node.js installed. Then, install the required dependencies:
      ```bash
      npm install
