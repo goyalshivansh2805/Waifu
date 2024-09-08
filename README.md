@@ -36,32 +36,32 @@
 
 
 **Setup**
-To integrate Waifu with Sofi, simply invite both bots to your server. Waifu will automatically begin managing raid data within Sofi's ecosystem.
-
-Invite Waifu: Use the invite link below to add Waifu to your Discord server:
-
-[Invite Waifu](https://discord.com/oauth2/authorize?client_id=1147915233202024489)
-
-Link to Sofi: Ensure that Sofi is also present in your server for full functionality.
+   To integrate Waifu with Sofi, simply invite both bots to your server. Waifu will automatically begin managing raid data within Sofi's ecosystem.
+   
+   Invite Waifu: Use the invite link below to add Waifu to your Discord server:
+   
+   [Invite Waifu](https://discord.com/oauth2/authorize?client_id=1147915233202024489)
+   
+   [Link to sofi](https://discord.com/oauth2/authorize?client_id=853629533855809596&permissions=388176&scope=applications.commands%20bot): Ensure that Sofi is also present in your server for full functionality.
 
 Command Cooldowns: Waifu automatically handles cooldowns for raid commands, so users must wait for a certain period before using the same command again. The cooldown settings are pre-configured but can be modified as per your requirements.
   
 **Usage**
-Once the bot is added to your server, it will handle data for raids seamlessly. You can configure commands or set specific cooldowns depending on how you want users to interact with the raid system.
-Type !help for list of all user commands and !help guild for all guild related commands.
+   Once the bot is added to your server, it will handle data for raids seamlessly. You can configure commands or set specific cooldowns depending on how you want users to interact with the raid system.
+   Type !help for list of all user commands and !help guild for all guild related commands.
 
-Example commands:
-
-!rc - Shows your raidcount.
-!rs  - Displays the status of an ongoing raid.
+   Example commands:
+   
+   !rc - Shows your raidcount.
+   !rs  - Displays the status of an ongoing raid.
 
 **Invite the Bot**
-To invite Waifu to your server, use the following link:
-
-[Invite Waifu](https://discord.com/oauth2/authorize?client_id=1147915233202024489)
-
-Make sure that Sofi is also present in your server for the best experience! [Invite sofi](https://discord.com/oauth2/authorize?client_id=853629533855809596&permissions=388176&scope=applications.commands%20bot)
+   To invite Waifu to your server, use the following link:
+   
+   [Invite Waifu](https://discord.com/oauth2/authorize?client_id=1147915233202024489)
+   
+   Make sure that Sofi is also present in your server for the best experience! [Invite sofi](https://discord.com/oauth2/authorize?client_id=853629533855809596&permissions=388176&scope=applications.commands%20bot)
 
 **Support**
-If you encounter any issues or have questions about using Waifu, feel free to reach out to me on Discord.
-Username : **dominatorsg**
+   If you encounter any issues or have questions about using Waifu, feel free to reach out to me on Discord.
+   Username : **dominatorsg**
