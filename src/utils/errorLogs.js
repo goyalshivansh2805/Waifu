@@ -21,8 +21,13 @@ module.exports = async (client,messageOrInteraction,usedCommandObject,err)=>{
         const errorChannelId = "1222559882461315122";
         const errorChannel =  await client.channels.fetch(errorChannelId);
         const botUser =client.user;
-        const cmdUsed = usedCommandObject.commandName;
-        const cmdArguments = usedCommandObject.commandArguments.join(" ");
+        let cmdUsed = "NA";
+        let cmdArguments = "NA";
+        if(usedCommandObject !== "NA"){
+           cmdUsed = usedCommandObject.commandName;
+           cmdArguments = usedCommandObject.commandArguments.join(" ");
+        }
+        
         let authorId = null;
         let guildId = messageOrInteraction.guild.id;
         if(messageOrInteraction instanceof Message){
@@ -31,8 +36,8 @@ module.exports = async (client,messageOrInteraction,usedCommandObject,err)=>{
         else{
             authorId = messageOrInteraction.user.id;
         }
-        const description = `Used By : ${authorId} \nGuild : ${guildId}\nCommand Used : ${cmdUsed}\nArguments : ${cmdArguments}\n\n**ERROR**\n\`${err}\``
-        const errorMessage = buildEmbed(embedColors.failure,'Error',description,botUser)
+        const description = `Used By : ${authorId} \nGuild : ${guildId}\nCommand Used : ${cmdUsed}\nArguments : ${cmdArguments}\n\n**ERROR**\n\`${err.message}\``
+        const errorMessage = buildEmbed(embedColors.failure,`${err.name}`,description,botUser)
         errorChannel.send({
             content:`<@${sg}>`,
             embeds:[errorMessage]

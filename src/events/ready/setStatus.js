@@ -9,6 +9,10 @@ let status = [
         name:'dominatorsg',
         type:ActivityType.Watching,
     },
+    {
+        name:'Nekotsuki',
+        type:ActivityType.Streaming,
+    }
 ]
 
 module.exports = async (client)=> {

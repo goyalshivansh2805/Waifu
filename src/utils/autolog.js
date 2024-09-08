@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Log = require('../models/Log');
 const {Client,Message,EmbedBuilder} = require('discord.js');
 const {clientId} = require('../../config.json');
-
+const errorManager = require("./errorLogs");
 const elixirPerRaid = 100;
 const shardPerRaid = 50;
 const raidLogChannelId = '1180155049620549724';
@@ -18,9 +18,6 @@ module.exports = async (client,message) =>{
         const timeoutPromise = () => {
             return new Promise((resolve) => {
                 setTimeout(async () => {
-                    const originalMessage = await message.channel.messages.fetch(message.reference.messageId);
-                    const authorDisplayName = originalMessage.author.username;
-                    targetUserId = originalMessage.author.id;
                     description = message.embeds[0].description;
                     if(!description.includes(authorDisplayName)) return;
                     const match = description.match(/(\d+) XP/);
@@ -48,7 +45,9 @@ module.exports = async (client,message) =>{
         const embed = embeds[0];
         let description = embed.description;
         let targetUserScore = 0;
-        let targetUserId = null;
+        const originalMessage = await message.channel.messages.fetch(message.reference.messageId);
+        const authorDisplayName = originalMessage.author.username;
+        let targetUserId = originalMessage.author.id;
         let targetUserMoves = 0;
         let targetUserDamage = 0;
         
@@ -60,17 +59,18 @@ module.exports = async (client,message) =>{
             const scoreMatch = description.match(/Score: \*\*(\d+)\*\*/);
             const damageMatch = description.match(/Damage: *\*\*(\d+) *\*\*\/\*\*(\d+)\*\*/);
             const moveMatch = description.match(/Total moves used: \*\*(\d+)\*\*/);
-            targetUserId = userIdMatch?userIdMatch[1]:null;
             targetUserScore = scoreMatch?parseInt(scoreMatch[1]):0;
             targetUserDamage = damageMatch?damageMatch[1]:0;
             targetUserMoves = moveMatch ? moveMatch[1] : 0;
         }
         if(!targetUserScore) return;
+        if(!targetUserId) return;
         let user = await User.findOne(
             {
                 userId:targetUserId,
             }
         )
+        //console.log(targetUserId);
         if(user){
            user.raidsParticipated += 1;
            user.totalScore += targetUserScore;  
@@ -95,13 +95,14 @@ module.exports = async (client,message) =>{
                 move:targetUserMoves,
                 damage:targetUserDamage,
                 addedby:clientId,
+                serverId:message.guild.id,
             }
         );
         await user.save();
         await logDetails.save();
         const logMessage = new EmbedBuilder()
             .setTitle('📜 Raid Logged.')
-            .setDescription(`User: <@${targetUserId}>\nGuild: **${user.guildName}**\nScore: **${targetUserScore}**`)
+            .setDescription(`User: <@${targetUserId}>\nGuild: **${user.guildName}**\nScore: **${targetUserScore}**\nServerID:${message.guild.id}`)
             .setColor(0x00ff00)
             .setTimestamp()
             .setFooter({text:`Added by ${message.guild.members.me.displayName}` , iconURL: `${message.guild.members.me.displayAvatarURL()}`})
@@ -113,6 +114,7 @@ module.exports = async (client,message) =>{
         );
 
     } catch (error) {
-        console.log(`Error While AutoLogging: ${error}`);
+        
+        await errorManager(client,message,"NA",error);
     }
 }

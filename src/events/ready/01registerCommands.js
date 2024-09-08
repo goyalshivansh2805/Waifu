@@ -6,8 +6,9 @@ const areCommandsDifferent = require('../../utils/areCommandsDifferent');
 
 module.exports = async (client) =>{
     try {
-        console.log('h')
-        const localCommands = getLocalCommands();
+        let test = 0;
+        if(!test){
+            const localCommands = getLocalCommands();
         // const testServerId = client.guilds.cache.get(testServer);
         // const applicationCommands = await testServerId.commands.fetch();
         // await Promise.all(applicationCommands.map(command => command.delete()));
@@ -53,6 +54,8 @@ module.exports = async (client) =>{
                 console.log(`Registered Command: ${name}`);
             }
         }
+        }
+        
     } catch (error) {
         console.log(`Error: ${error}`);
     }

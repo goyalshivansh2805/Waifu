@@ -1,10 +1,12 @@
 const { default: test } = require("node:test");
-const { testServer, devs, sofiId } = require("../../../config.json");
+const { testServer, devs, sofiId ,admins} = require("../../../config.json");
 const getLocalCommands = require("../../utils/getLocalCommands");
 const prefixRemover = require("../../utils/prefixRemover");
 const autoLog = require("../../utils/autolog.js");
 const { Message, Client,Collection } = require("discord.js");
 const raidTimings = require("../../utils/raidTimings.js");
+const pingCmd = require("../../commands/devs/stats.js");
+const errorManager = require("../../utils/errorLogs.js")
 
 /**
  *
@@ -15,6 +17,9 @@ const raidTimings = require("../../utils/raidTimings.js");
 module.exports = async (client, message) => {
   const localCommands = getLocalCommands();
   try {
+      if(message.content.includes("<@1147915233202024489>")){
+          await pingCmd.callback(client, message);
+      }
     if (
       message.author.id === sofiId &&
       message.reference &&
@@ -39,6 +44,35 @@ module.exports = async (client, message) => {
           }
         return;
       }
+    }
+     if(message.author.id === sofiId){
+      const mes = message.content;
+      //console.log(mes);
+      if(!mes.startsWith('<@')) return;
+
+      if(!mes.includes("Could not find any cards matching your selected filter")) return;
+
+      const mention = mes.split(" ")[0];
+      let targetUserId = null;
+      const match = mention.match(/^<@!?(\d+)>$/);
+      if (match) {
+          targetUserId = match[1];
+      }
+      if(!targetUserId) return;
+      const chicho = "934379893549060126";
+      //if(admins.includes(targetUserId)){}
+      if(targetUserId === chicho || devs.includes(targetUserId)){
+      try{
+        if(message.deletable){
+          await message.delete();
+        }else{
+          message.reply("I am not able to delete this message, check my perms or contact sg.");
+        }
+      }
+      catch(error){
+        await errorManager(client,message,"NA",error);
+      }
+    }
     }
     if(message.author.bot) return;
     const usedCommandObject = prefixRemover(message);
@@ -105,12 +139,28 @@ module.exports = async (client, message) => {
     if (timestamps.has(message.author.id)) {
       const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
       if (now < expirationTime) {
+        const remainingTimeInSeconds = Math.ceil((expirationTime - now) / 1000);
         const expiredTimestamp = Math.round(expirationTime / 1000);
-        return message.reply({ content:  `[\`${commandObject.name}\`] , Try again <t:${expiredTimestamp}:R>.` });
+        const interval = expirationTime - now;
+        let replyMessage = null;
+        replyMessage = await message.reply({ content:  `[\`${commandObject.name}\`] , Try again in **${remainingTimeInSeconds}**s.` });
+        setTimeout(async () => {
+          if(replyMessage){
+            try {
+              await replyMessage.delete();
+            } catch (error) {
+              console.log(error)
+            }
+    
+          }
+          }, interval-1000);
+        return;
       }
     }
     timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    setTimeout(async () => {
+      timestamps.delete(message.author.id);
+      }, cooldownAmount);
     await commandObject.callback(client, message,usedCommandObject);
   } catch (error) {
     console.log(`Error: ${error}`);

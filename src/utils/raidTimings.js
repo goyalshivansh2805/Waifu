@@ -1,6 +1,21 @@
 const Raid = require('../models/Raid');
-const {Message,Client} =  require('discord.js');
+const {Message,Client,EmbedBuilder} =  require('discord.js');
 
+
+const embedColors = {
+    success: 0x00ff00,
+    failure: 'Red',
+    process:'Yellow'
+  };
+
+function buildEmbed(color, title, description, authorUser) {
+    return new EmbedBuilder()
+      .setTimestamp()
+      .setFooter({ text: `Requested by ${authorUser.displayName}`, iconURL: `${authorUser.displayAvatarURL()}` })
+      .setTitle(title)
+      .setColor(color)
+      .setDescription(description);
+  } 
 /**
  * 
  * @param {Client} client 
@@ -12,7 +27,7 @@ module.exports = async (client , message)=>{
             return new Promise((resolve) => {
                 setTimeout(()=>{
                     title = message.embeds[0].title;
-                    if(!title) return;
+                    if(!title || title.startsWith("SOFI RAID: [Turn Ends")) return;
                     try{
                      	const raidEndTiming = title.match(/\<t\:(\d+)\:R\>/);   
                         if(!raidEndTiming) return;
@@ -30,6 +45,7 @@ module.exports = async (client , message)=>{
         if(embeds.length===0) return;
         const embed = embeds[0];
         let title = embed.title;
+        const botUser =client.user;
         let raidEndTimestamp = null;
         let description = embed.description;
         if(description === '**Loading Raid** <a:loading:876610443148406794>') { 
@@ -52,6 +68,14 @@ module.exports = async (client , message)=>{
             }
         );
         await raid.save();
+        const raidLogChannelId = "1224357057398837298";
+        const raidLogChannel =  await client.channels.fetch(raidLogChannelId);
+         const raidLogDescription = `Starting: <t:${raid.startingTimestamp}:R>\nEnding: <t:${raid.endingTimestamp}:R>\nMessage Id: ${message.id}\nChannel Id: ${message.channel.id}\nGuild Id: ${message.guild.id}\nTitle: ${title}`;
+        const raidLogMessage = buildEmbed(embedColors.failure,'A new monster spawned',raidLogDescription,botUser)
+        raidLogChannel.send({
+            content:`Raid started`,
+            embeds:[raidLogMessage]
+        })
     } catch (error) {
         console.log(error);
     }

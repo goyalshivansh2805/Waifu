@@ -129,8 +129,9 @@ module.exports = {
                 }
                 if(interaction.customId === "change-time-button"){
                     isResponded = true;
+                    const currentTimeSeconds = Math.floor(new Date().getTime() / 1000);
                     const modal = new ModalBuilder()
-                        .setCustomId(`raidReminderModel-${authorId}`)
+                        .setCustomId(`raidReminderModel-${authorId}-${currentTimeSeconds}`)
                         .setTitle("Guild Raid Reminder")
 
                     const raidTimer = new TextInputBuilder()
@@ -142,8 +143,9 @@ module.exports = {
                     modal.addComponents(actionRow);
                     await interaction.showModal(modal);
 
-                    const filterForTimer = (interaction) => interaction.customId === `raidReminderModel-${authorId}`;
-                    interaction.awaitModalSubmit({filter:filterForTimer , time:30_000})
+                    const filterForTimer = (interaction) => interaction.customId === `raidReminderModel-${authorId}-${currentTimeSeconds}`;
+                    try {
+                        interaction.awaitModalSubmit({filter:filterForTimer , time:10_000})
                         .then(async (modalInteraction)=>{
                             const newTimer  = modalInteraction.fields.getTextInputValue("raid-timer");
                             if(isNaN(newTimer) || newTimer<10 || newTimer>150){
@@ -162,14 +164,23 @@ module.exports = {
                             })
                             await raidRemindData.save();
                         })
-                        .catch((err)=>{
-                            console.log(err)
+                        .catch(async (err)=>{
+                            if (err.name === 'Error [InteractionCollectorError]') {
+                                return;
+                            } else {
+                                await errorManager(client,message,usedCommandObject,err);
+                            }
                         })
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    
                 }
                 if(interaction.customId === "change-channel-button"){
                     isResponded = true;
+                    const currentTimeSeconds = Math.floor(new Date().getTime() / 1000);
                     const modal = new ModalBuilder()
-                        .setCustomId(`raidReminderModelChannel-${authorId}`)
+                        .setCustomId(`raidReminderModelChannel-${authorId}-${currentTimeSeconds}`)
                         .setTitle("Guild Raid Reminder")
 
                     const changeChannel = new TextInputBuilder()
@@ -180,34 +191,43 @@ module.exports = {
 
                     modal.addComponents(actionRow);
                     await interaction.showModal(modal);
-                    const filterForChannel = (interaction) => interaction.customId === `raidReminderModelChannel-${authorId}`;
-                    interaction.awaitModalSubmit({filter:filterForChannel , time:30_000})
-                        .then(async (modalInteraction)=>{
-                            const newChannelId  = modalInteraction.fields.getTextInputValue("channel-id");
-                            const channel =  client.channels.resolve(newChannelId);
-                            if(!channel || channel.guildId !== message.guildId) {
-                                await modalInteraction.reply({
-                                    content:"Invalid Channel Id.",
-                                    ephemeral:true});
-                                return;
-                            }
-                            else{
+                    const filterForChannel = (interaction) => interaction.customId === `raidReminderModelChannel-${authorId}-${currentTimeSeconds}`;
+                    try {
+                        interaction.awaitModalSubmit({filter:filterForChannel , time:30_000})
+                            .then(async (modalInteraction)=>{
+                                const newChannelId  = modalInteraction.fields.getTextInputValue("channel-id");
+                                const channel =  client.channels.resolve(newChannelId);
+                                if(!channel || channel.guildId !== message.guildId) {
+                                    await modalInteraction.reply({
+                                        content:"Invalid Channel Id.",
+                                        ephemeral:true});
+                                    return;
+                                }
+                                else{
 
-                                channelMention = `<#${newChannelId}>`;
-                                modalInteraction.deferUpdate();
-                               
-                                raidRemindData.channelId = newChannelId;
-                                await raidRemindData.save();
-                                msg.setDescription(`Reminder : ${status(raidRemindData.status)}\nRemind Before : ${raidRemindData.remindTime} Minutes\nChannel : ${channelMention}`);
-                                await reply.edit({
-                                    embeds:[msg],
-                                    components:[row],
-                                })
-                            }
+                                    channelMention = `<#${newChannelId}>`;
+                                    modalInteraction.deferUpdate();
+                                
+                                    raidRemindData.channelId = newChannelId;
+                                    msg.setDescription(`Reminder : ${status(raidRemindData.status)}\nRemind Before : ${raidRemindData.remindTime} Minutes\nChannel : ${channelMention}`);
+                                    await reply.edit({
+                                        embeds:[msg],
+                                        components:[row],
+                                    })
+                                    await raidRemindData.save();
+                                }
+                            })
+                            .catch(async (err)=>{
+                                if (err.name === 'Error [InteractionCollectorError]') {
+                                    return;
+                                } else {
+                                    await errorManager(client,message,usedCommandObject,err);
+                                }
                         })
-                        .catch((err)=>{
-                            console.log(err)
-                        })
+                    } catch (error) {
+                        console.log(error)
+                    }
+                   
                     
                 }
             });

@@ -59,9 +59,9 @@ module.exports = {
         let targetLogs = await Log.find({
           userId:targetUserId,
         }).sort({ createdAt: -1 });
-        if(!targetUserData || !targetLogs){
+        if(!targetUserData ||  targetLogs.length ===0){
           const noDataEmbed = buildEmbed(embedColors.failure,'Records Not Found','Please Raid atleast Once,then use this command.',authorUser);
-          messageOrInteraction.reply({embeds:[noDataEmbed]});
+          await messageOrInteraction.reply({embeds:[noDataEmbed]});
           return;
         };
         logsPerPage = 10;

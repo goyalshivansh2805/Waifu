@@ -38,8 +38,10 @@ module.exports = {
             let targetUserScore = null;
             let targetUserMoves = 0;
             let targetUserDamage = 0;
+            let serverId = null;
             if(messageOrInteraction instanceof Message){
                 authorId = messageOrInteraction.author.id;
+                serverId = messageOrInteraction.guild.id;
                 if(usedCommandObject.commandArguments.length){
                     targetUserId = usedCommandObject.commandArguments[0];
                     targetUserScore = usedCommandObject.commandArguments[1];
@@ -78,19 +80,19 @@ module.exports = {
             targetUserScore = parseInt(targetUserScore);
             targetUserMoves = parseInt(targetUserMoves);
             targetUserDamage = parseInt(targetUserDamage);
-            if(!authorUserData || !authorUserData.guildName && !devs.includes(authorId)){
+            if(!authorUserData || !authorUserData.guildName && !admins.includes(authorId)){
                 const noDataEmbed = buildEmbed(embedColors.failure,'Guild Not Found','You are not in any guild.',authorUser);
                 messageOrInteraction.reply({embeds:[noDataEmbed]});
                 return;
             };
             let guildName = null;
             if(authorUserData) guildName = authorUserData.guildName;
-            if(!targetUserData || !targetUserData.guildName && !devs.includes(authorId)){
+            if(!targetUserData || !targetUserData.guildName && !admins.includes(authorId)){
                 const noDataEmbed = buildEmbed(embedColors.failure,'Guild Not Found',`<@${targetUserId}> is not in any guild.`,authorUser);
                 messageOrInteraction.reply({embeds:[noDataEmbed]});
                 return;
             };
-            if(guildName !== targetUserData.guildName && !devs.includes(authorId)){
+            if(guildName !== targetUserData.guildName && !admins.includes(authorId)){
                 const notInSameGuildEmbed = buildEmbed(embedColors.failure,'Not in Same Guild',`<@${targetUserId}> is not in the guild **${guildName}**.`,authorUser);
                 messageOrInteraction.reply({embeds:[notInSameGuildEmbed]});
                 return;
@@ -123,6 +125,7 @@ module.exports = {
                     move:targetUserMoves,
                     damage:targetUserDamage,
                     addedby:authorId,
+                    serverId:serverId
                 }
             );
             await targetUserData.save();

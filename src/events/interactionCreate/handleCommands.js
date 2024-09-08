@@ -65,8 +65,22 @@ module.exports = async (client, interaction) => {
     if (timestamps.has(interaction.user.id)) {
       const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
       if (now < expirationTime) {
+          const remainingTimeInSeconds = Math.ceil((expirationTime - now) / 1000);
         const expiredTimestamp = Math.round(expirationTime / 1000);
-        return interaction.reply({ content:  `[\`${commandObject.name}\`] , Try again <t:${expiredTimestamp}:R>.` });
+        const interval = expirationTime - now;
+        let replyMessage = null;
+        replyMessage = await interaction.reply({ content:  `[\`${commandObject.name}\`] , Try again in **${remainingTimeInSeconds}**s.` });
+        setTimeout(async () => {
+          if(replyMessage){
+            try {
+              await replyMessage.delete();
+            } catch (error) {
+              console.log(error)
+            }
+    
+          }
+          }, interval-1000);
+          return;
       }
     }
     timestamps.set(interaction.user.id, now);

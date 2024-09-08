@@ -79,22 +79,16 @@ const guildCommands = [
         description:'Shows your Guild leaderboard.',
     },
     {
-        name:'log',
-        alias:'l',
-        format:'l user score moves damage',
-        description:'Logs a raid for any user in your guild.',
-    },
-    {
-        name:'cleardatabase',
-        alias:'cdb',
-        format:'cdb',
-        description:'Clears your guild database.',
-    },
-    {
         name:'raidstatus',
         alias:'rs',
-        format:'rs time',
-        description:'Shows Raid Status for a given time.',
+        format:'rs',
+        description:'Shows Raid Status for current raid.',
+    },
+    {
+      name:'raidremind',
+        alias:'rr',
+        format:'rr',
+        description:'Pings all user of guild who didnt raided before a set time.'
     },
     {
         name:'sheet',

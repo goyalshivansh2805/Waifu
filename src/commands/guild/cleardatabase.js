@@ -150,7 +150,7 @@ module.exports = {
                             await guildPlayer.save();
                         });
                         let successMessage = null;
-                        if(!allGuilds) successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${authorId}> , Guild with name **${guildName}** has been Created Successfully.`,authorUser);
+                        if(!allGuilds) successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${authorId}> , Data for Guild with name **${guildName}** has been Deleted Successfully.`,authorUser);
                         else successMessage = buildEmbed(embedColors.success,'Process Successful.',`<@${authorId}> , Data for all guilds have been successfully deleted.`,authorUser);
                         reply.edit({
                             embeds:[successMessage],

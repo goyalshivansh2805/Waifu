@@ -20,7 +20,7 @@ function buildEmbed(color, title, description, authorUser) {
 
 
 module.exports = {
-    callback:async (client , message) => {
+    callback:async (client , message,usedCommandObject) => {
         if(!devs.includes(message.author.id) ) return message.channel.send("You're not bot the owner! ")
 
     try {

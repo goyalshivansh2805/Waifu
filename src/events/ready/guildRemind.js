@@ -20,13 +20,14 @@ module.exports = async (client)=>{
             const resetTimer = 170*60;
             guilds.forEach(async (guild)=>{
                 const guildData = await GuildReminder.findOne({guildName:guild.guildName});
-                if(!guildData || guildData.status === "disabled" || !guildData.channelId) return;
+                if(!guildData) return;
                 if(timeDif>resetTimer && (guildData.noOfAutoPings !== 0 || guildData.noOfManualPings !==0)){
                     guildData.noOfAutoPings = 0;
                     guildData.noOfManualPings = 0;
                     await guildData.save();
                     return;
                 }
+                if(guildData.status === "disabled" || !guildData.channelId) return;
                 if(guildData.noOfAutoPings !== 0){
                     return;
                 }
